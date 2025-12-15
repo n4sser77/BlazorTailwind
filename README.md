@@ -114,8 +114,4 @@ dotnet build
 ```bash
 cd BlazorWebAppTailwind
 dotnet test
-```
-
-## License
-
-This project is licensed under the MIT License. 
+``` 
