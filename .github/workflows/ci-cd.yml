@@ -44,27 +44,34 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Create Release Tag
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Check if release exists
+      id: check_release
+      run: |
+        if git ls-remote --tags origin | grep -q "refs/tags/v1.0.0"; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+      
+    - name: Create Release
+      if: steps.check_release.outputs.exists == 'false'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v1.0.0
-        release_name: Release v1.0.0
-        body: |
-          ## BlazorTailwind v1.0.0
-          
-          Initial release of BlazorTailwind - Blazor server webapp template preconfigured with Tailwind V4 and Identity for authentication.
-          
-          ### Features
-          - Blazor Web App template
-          - CI/CD pipeline with GitHub Actions
-          - Automated build and release process
-        draft: false
-        prerelease: false
+      run: |
+        gh release create v1.0.0 \
+          --title "Release v1.0.0" \
+          --notes "## BlazorTailwind v1.0.0
+
+        Initial release of BlazorTailwind - Blazor server webapp template preconfigured with Tailwind V4 and Identity for authentication.
+
+        ### Features
+        - Blazor Web App template
+        - CI/CD pipeline with GitHub Actions
+        - Automated build and release process"
