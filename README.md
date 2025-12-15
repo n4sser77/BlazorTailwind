@@ -2,6 +2,10 @@
 
 Blazor server webapp template preconfigured with Tailwind V4 and Identity for authentication.
 
+![preview image 1](./Preview/p1.png "Preview image 1")
+
+![preview image 2](./Preview/p2.png "Preview image 2")
+
 ## Why Use This Template?
 
 Setting up Tailwind CSS in a Blazor project with proper configuration can be time-consuming and error-prone. Additionally, updating ASP.NET Core Identity's default Bootstrap classes to work with Tailwind involves a significant amount of boilerplate code. This template provides a ready-to-use project with:
@@ -34,9 +38,11 @@ dotnet run
 
 1. Click the "Fork" button at the top right of this repository
 2. Clone your forked repository:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/BlazorTailwind.git
    ```
+
 3. Follow the same steps as Option 1 to run the project
 
 ### Option 3: Export as Visual Studio Project Template
@@ -120,4 +126,4 @@ dotnet build
 ```bash
 cd BlazorWebAppTailwind
 dotnet test
-``` 
+```
