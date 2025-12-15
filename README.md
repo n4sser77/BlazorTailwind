@@ -2,6 +2,15 @@
 
 Blazor server webapp template preconfigured with Tailwind V4 and Identity for authentication.
 
+## Why Use This Template?
+
+Setting up Tailwind CSS in a Blazor project with proper configuration can be time-consuming and error-prone. Additionally, updating ASP.NET Core Identity's default Bootstrap classes to work with Tailwind involves a significant amount of boilerplate code. This template provides a ready-to-use project with:
+
+- **Pre-configured Tailwind CSS v4**: Skip the slow configuration process and start styling immediately
+- **Identity with Tailwind**: All Identity pages and components already styled with Tailwind classes
+- **Beautiful UI out of the box**: Naturally beautiful interface using Tailwind v4's modern design system
+- **Save hours of setup time**: Jump straight into building your application
+
 ## Features
 
 - ✨ Blazor Web App (.NET 10.0)
@@ -76,9 +85,6 @@ dotnet run
 ```bash
 # Specify a different target framework
 dotnet new blazortailwind -n MyBlazorApp --Framework net9.0
-
-# Skip automatic restore
-dotnet new blazortailwind -n MyBlazorApp --SkipRestore
 ```
 
 #### Uninstall the Template
