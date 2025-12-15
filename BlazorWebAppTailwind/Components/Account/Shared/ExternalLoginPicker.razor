@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using BlazorWebAppTailwind.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityRedirectManager RedirectManager
+
+@if (externalLogins.Length == 0)
+{
+    <div class="rounded-lg bg-gray-50 p-4">
+        <p class="text-sm text-gray-600">
+            There are no external authentication services configured. See this
+            <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="text-indigo-600 hover:text-indigo-500">
+                article about setting up this ASP.NET application to support logging in via external services
+            </a>.
+        </p>
+    </div>
+}
+else
+{
+    <form action="Account/PerformExternalLogin" method="post">
+        <AntiforgeryToken />
+        <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+        <div class="flex flex-wrap gap-2">
+            @foreach (var provider in externalLogins)
+            {
+                <button type="submit" name="provider" value="@provider.Name"
+                        title="Log in using your @provider.DisplayName account"
+                        class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    @provider.DisplayName
+                </button>
+            }
+        </div>
+    </form>
+}
+
+@code {
+    private AuthenticationScheme[] externalLogins = [];
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        externalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToArray();
+    }
+}

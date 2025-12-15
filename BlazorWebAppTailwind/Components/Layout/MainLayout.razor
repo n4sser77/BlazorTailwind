@@ -1,0 +1,58 @@
+﻿@inherits LayoutComponentBase
+
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="hidden w-64 flex-shrink-0 border-r border-gray-200 bg-white lg:block">
+        <NavMenu />
+    </aside>
+
+    <!-- Mobile menu overlay -->
+    <div class="@(menuOpen ? "fixed inset-0 z-40 lg:hidden" : "hidden")">
+        <div class="fixed inset-0 bg-gray-600/75" @onclick="ToggleMenu"></div>
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white">
+            <NavMenu />
+        </aside>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex flex-1 flex-col">
+        <!-- Top bar -->
+        <header class="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-gray-200 bg-white px-4 lg:px-6">
+            <button type="button" class="lg:hidden -m-2.5 p-2.5 text-gray-700" @onclick="ToggleMenu">
+                <span class="sr-only">Open sidebar</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="flex flex-1 items-center justify-end gap-4">
+                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" 
+                   class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                    Docs
+                </a>
+            </div>
+        </header>
+
+        <!-- Page content -->
+        <main class="flex-1 p-4 lg:p-6">
+            <article class="mx-auto max-w-7xl">
+                @Body
+            </article>
+        </main>
+    </div>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet 
+     class="fixed bottom-0 left-0 right-0 z-50 hidden bg-yellow-100 border-t border-yellow-400 p-4 text-yellow-800">
+    An unhandled error has occurred.
+    <a href="." class="ml-2 font-semibold underline hover:no-underline">Reload</a>
+    <button class="ml-4 font-bold" onclick="this.parentElement.style.display='none'">✕</button>
+</div>
+
+@code {
+    private bool menuOpen;
+
+    private void ToggleMenu()
+    {
+        menuOpen = !menuOpen;
+    }
+}

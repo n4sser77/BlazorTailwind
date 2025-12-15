@@ -1,0 +1,37 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Counter</h1>
+        <p class="mt-1 text-gray-600">Click the button to increment the counter.</p>
+    </div>
+
+    <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+        <div class="text-center">
+            <p class="text-6xl font-bold text-indigo-600" role="status">@currentCount</p>
+            <p class="mt-2 text-sm text-gray-500">Current count</p>
+        </div>
+
+        <div class="mt-8 flex justify-center">
+            <button @onclick="IncrementCount"
+                    class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Click me
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

@@ -1,0 +1,176 @@
+﻿@page "/Account/Login"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using BlazorWebAppTailwind.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Log in</PageTitle>
+
+<div class="mx-auto max-w-4xl space-y-6">
+    <div class="text-center">
+        <h1 class="text-2xl font-bold text-gray-900">Log in</h1>
+        <p class="mt-1 text-gray-600">Welcome back! Please sign in to your account.</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <StatusMessage Message="@errorMessage" />
+            <EditForm EditContext="editContext" method="post" OnSubmit="LoginUser" FormName="login">
+                <DataAnnotationsValidator />
+                <h2 class="text-lg font-semibold text-gray-900">Use a local account to log in</h2>
+                <hr class="my-4 border-gray-200" />
+                <ValidationSummary class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert" />
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="Input.Email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <InputText @bind-Value="Input.Email" id="Input.Email" 
+                                   class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" 
+                                   autocomplete="username webauthn" aria-required="true" placeholder="name@example.com" />
+                        <ValidationMessage For="() => Input.Email" class="mt-1 text-sm text-red-600" />
+                    </div>
+                    <div>
+                        <label for="Input.Password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <InputText type="password" @bind-Value="Input.Password" id="Input.Password" 
+                                   class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" 
+                                   autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <ValidationMessage For="() => Input.Password" class="mt-1 text-sm text-red-600" />
+                    </div>
+                    <div class="flex items-center">
+                        <InputCheckbox @bind-Value="Input.RememberMe" id="Input.RememberMe"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                        <label for="Input.RememberMe" class="ml-2 text-sm text-gray-700">Remember me</label>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button type="submit" 
+                            class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        Log in
+                    </button>
+                </div>
+
+                <div class="mt-6 flex flex-col items-center">
+                    <span class="text-sm text-gray-500">OR</span>
+                    <PasskeySubmit Operation="PasskeyOperation.Request" Name="Input.Passkey" EmailName="Input.Email" 
+                                   class="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        Log in with a passkey
+                    </PasskeySubmit>
+                </div>
+
+                <hr class="my-6 border-gray-200" />
+
+                <div class="space-y-2 text-sm">
+                    <p><a href="Account/ForgotPassword" class="text-indigo-600 hover:text-indigo-500">Forgot your password?</a></p>
+                    <p><a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" class="text-indigo-600 hover:text-indigo-500">Register as a new user</a></p>
+                    <p><a href="Account/ResendEmailConfirmation" class="text-indigo-600 hover:text-indigo-500">Resend email confirmation</a></p>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-gray-900">Use another service to log in</h3>
+            <hr class="my-4 border-gray-200" />
+            <ExternalLoginPicker />
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? errorMessage;
+    private EditContext editContext = default!;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = default!;
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+
+        editContext = new EditContext(Input);
+
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+
+    public async Task LoginUser()
+    {
+        if (!string.IsNullOrEmpty(Input.Passkey?.Error))
+        {
+            errorMessage = $"Error: {Input.Passkey.Error}";
+            return;
+        }
+
+        SignInResult result;
+        if (!string.IsNullOrEmpty(Input.Passkey?.CredentialJson))
+        {
+            // When performing passkey sign-in, don't perform form validation.
+            result = await SignInManager.PasskeySignInAsync(Input.Passkey.CredentialJson);
+        }
+        else
+        {
+            // If doing a password sign-in, validate the form.
+            if (!editContext.Validate())
+            {
+                return;
+            }
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+            result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        }
+
+        if (result.Succeeded)
+        {
+            Logger.LogInformation("User logged in.");
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+        else if (result.RequiresTwoFactor)
+        {
+            RedirectManager.RedirectTo(
+                "Account/LoginWith2fa",
+                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
+        }
+        else if (result.IsLockedOut)
+        {
+            Logger.LogWarning("User account locked out.");
+            RedirectManager.RedirectTo("Account/Lockout");
+        }
+        else
+        {
+            errorMessage = "Error: Invalid login attempt.";
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+
+        public PasskeyInputModel? Passkey { get; set; }
+    }
+}

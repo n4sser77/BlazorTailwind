@@ -1,0 +1,59 @@
+﻿@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<div class="space-y-6">
+    <div class="rounded-xl border border-red-200 bg-red-50 p-6">
+        <div class="flex items-start gap-4">
+            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-semibold text-red-800">Error</h1>
+                <p class="mt-1 text-red-700">An error occurred while processing your request.</p>
+            </div>
+        </div>
+    </div>
+
+    @if (ShowRequestId)
+    {
+        <div class="rounded-lg bg-gray-100 p-4">
+            <p class="text-sm text-gray-600">
+                <span class="font-medium">Request ID:</span>
+                <code class="ml-2 rounded bg-gray-200 px-2 py-1 text-xs">@RequestId</code>
+            </p>
+        </div>
+    }
+
+    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-900">Development Mode</h2>
+        <p class="mt-2 text-gray-600">
+            Swapping to the <strong class="font-medium">Development</strong> environment will display more detailed information about the error that occurred.
+        </p>
+        <div class="mt-4 rounded-lg bg-amber-50 border border-amber-200 p-4">
+            <p class="text-sm text-amber-800">
+                <strong class="font-medium">Warning:</strong> The Development environment shouldn't be enabled for deployed applications.
+                It can result in displaying sensitive information from exceptions to end users.
+            </p>
+        </div>
+        <p class="mt-4 text-sm text-gray-600">
+            For local debugging, enable the <strong class="font-medium">Development</strong> environment by setting the 
+            <code class="rounded bg-gray-100 px-1.5 py-0.5 text-xs">ASPNETCORE_ENVIRONMENT</code> environment variable to 
+            <code class="rounded bg-gray-100 px-1.5 py-0.5 text-xs">Development</code> and restarting the app.
+        </p>
+    </div>
+</div>
+
+@code{
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

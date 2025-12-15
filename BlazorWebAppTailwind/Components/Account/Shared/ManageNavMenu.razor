@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using BlazorWebAppTailwind.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+
+<nav class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <ul class="space-y-1">
+        <li>
+            <NavLink href="Account/Manage" Match="NavLinkMatch.All"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Profile
+            </NavLink>
+        </li>
+        <li>
+            <NavLink href="Account/Manage/Email"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Email
+            </NavLink>
+        </li>
+        <li>
+            <NavLink href="Account/Manage/ChangePassword"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Password
+            </NavLink>
+        </li>
+        @if (hasExternalLogins)
+        {
+            <li>
+                <NavLink href="Account/Manage/ExternalLogins"
+                         class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                         ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                    External logins
+                </NavLink>
+            </li>
+        }
+        <li>
+            <NavLink href="Account/Manage/TwoFactorAuthentication"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Two-factor authentication
+            </NavLink>
+        </li>
+        <li>
+            <NavLink href="Account/Manage/Passkeys"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Passkeys
+            </NavLink>
+        </li>
+        <li>
+            <NavLink href="Account/Manage/PersonalData"
+                     class="block rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                     ActiveClass="bg-indigo-50 text-indigo-700 font-medium">
+                Personal data
+            </NavLink>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    private bool hasExternalLogins;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+    }
+}
