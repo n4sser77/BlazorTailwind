@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json.schemastore.org/template",
+  "$schema": "https://json.schemastore.org/template",
   "author": "n4sser77",
   "classifications": [
     "Web",
@@ -9,6 +9,8 @@
   ],
   "identity": "BlazorTailwind.Template",
   "name": "Blazor Web App with Tailwind CSS",
+  "defaultName": "BlazorApp",
+  "description": "A Blazor Server project template pre-configured with Tailwind CSS v4 and ASP.NET Core Identity with SQL Server.",
   "shortName": "blazortailwind",
   "tags": {
     "language": "C#",
@@ -16,6 +18,11 @@
   },
   "sourceName": "BlazorWebAppTailwind",
   "preferNameDirectory": true,
+  "primaryOutputs": [
+    {
+      "path": "BlazorWebAppTailwind.csproj"
+    }
+  ],
   "symbols": {
     "Framework": {
       "type": "parameter",
@@ -37,10 +44,22 @@
       ],
       "defaultValue": "net10.0",
       "replaces": "net10.0"
+    },
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "HostIdentifier"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "If specified, skips the automatic restore of the project on create.",
+      "defaultValue": "false"
     }
   },
   "sources": [
     {
+      "source": "Content",
+      "target": "./",
       "modifiers": [
         {
           "exclude": [
@@ -57,6 +76,18 @@
           ]
         }
       ]
+    }
+  ],
+  "postActions": [
+    {
+      "id": "restore",
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        { "text": "Run 'dotnet restore'" }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
     }
   ]
 }
