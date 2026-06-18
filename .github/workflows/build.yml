@@ -6,37 +6,39 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
-  build:
+  validate-template:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    
+
+    - name: Install template
+      run: dotnet new install . --force
+
+    - name: Generate project from template
+      run: dotnet new blazortailwind -n TestProject -o /tmp/test-project
+
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./BlazorWebAppTailwind
-    
+      working-directory: /tmp/test-project
+
     - name: Install npm packages
       run: npm install
-      working-directory: ./BlazorWebAppTailwind
-    
+      working-directory: /tmp/test-project
+
     - name: Build
       run: dotnet build --no-restore
-      working-directory: ./BlazorWebAppTailwind
-    
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-      working-directory: ./BlazorWebAppTailwind
+      working-directory: /tmp/test-project

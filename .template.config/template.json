@@ -18,36 +18,52 @@
   },
   "sourceName": "BlazorWebAppTailwind",
   "preferNameDirectory": true,
+  "guids": [
+    "17bba011-adc5-4801-971e-6f683ceaf100"
+  ],
   "primaryOutputs": [
     {
       "path": "BlazorWebAppTailwind.csproj"
     }
   ],
   "symbols": {
-    "Framework": {
-      "type": "parameter",
-      "description": "The target framework for the project.",
-      "datatype": "choice",
-      "choices": [
-        {
-          "choice": "net10.0",
-          "description": "Target .NET 10.0"
-        },
-        {
-          "choice": "net9.0",
-          "description": "Target .NET 9.0"
-        },
-        {
-          "choice": "net8.0",
-          "description": "Target .NET 8.0"
-        }
-      ],
-      "defaultValue": "net10.0",
-      "replaces": "net10.0"
-    },
     "HostIdentifier": {
       "type": "bind",
       "binding": "HostIdentifier"
+    },
+    "displayName": {
+      "type": "parameter",
+      "datatype": "text",
+      "description": "The display name for the application shown in the navigation menu.",
+      "defaultValue": "BlazorApp",
+      "replaces": "BlazorTailwind"
+    },
+    "npmName": {
+      "type": "generated",
+      "generator": "casing",
+      "parameters": {
+        "source": "name",
+        "toLower": true
+      },
+      "replaces": "blazorwebapptailwind"
+    },
+    "httpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 5000,
+        "high": 5300
+      },
+      "replaces": "5282"
+    },
+    "httpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": {
+        "low": 7000,
+        "high": 7300
+      },
+      "replaces": "7059"
     },
     "skipRestore": {
       "type": "parameter",
@@ -72,6 +88,7 @@
             "**/obj/**",
             "**/node_modules/**",
             "**/*.user",
+            "**/*.lock.json",
             "**/.gitignore"
           ]
         }
